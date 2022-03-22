@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'ShowWebhookGet'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_979F814B28374629928DAD452E33ACB4 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_28FCDE868A4E4122B1F153977170570F }}
           package: .
