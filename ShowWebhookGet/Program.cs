@@ -23,6 +23,8 @@ app.MapPost("api/webhook", (HttpContext context, QueueService queueService) =>
     var content = reader.ReadToEndAsync().GetAwaiter().GetResult();
     queueService.Push(content.Replace(System.Environment.NewLine, string.Empty));
 });
+// Pop content from queue
+app.MapGet("api/pop", (QueueService queueService) => queueService.Pop());
 // server-sent event
 app.MapGet("api/server-send-events", async (HttpContext context, QueueService queueService) =>
 {
@@ -32,7 +34,7 @@ app.MapGet("api/server-send-events", async (HttpContext context, QueueService qu
         await Task.Delay(3000);
         var content = queueService.Pop();
 
-        if (!string.IsNullOrEmpty(content))  await context.Response.WriteAsync($"data: {content}\n\n");
+        if (!string.IsNullOrEmpty(content)) await context.Response.WriteAsync($"data: {content}\n\n");
 
         await context.Response.Body.FlushAsync();
     }
