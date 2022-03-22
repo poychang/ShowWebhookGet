@@ -13,6 +13,7 @@ if (!app.Environment.IsDevelopment()) app.UseHsts();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 // Webhook endpoint
