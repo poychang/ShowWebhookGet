@@ -1,4 +1,5 @@
 using ShowWebhookGet;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +21,13 @@ app.UseStaticFiles();
 app.MapPost("api/webhook", (HttpContext context, QueueService queueService) =>
 {
     using var reader = new StreamReader(context.Request.Body, System.Text.Encoding.UTF8);
-    var content = reader.ReadToEndAsync().GetAwaiter().GetResult();
-    queueService.Push(content.Replace(System.Environment.NewLine, string.Empty));
+    var content = new
+    {
+        WebhookHeaders = context.Request.Headers,
+        WebhookQuery = context.Request.Query,
+        WebhookBody = reader.ReadToEndAsync().GetAwaiter().GetResult()
+    };
+    queueService.Push(JsonSerializer.Serialize(content).Replace(System.Environment.NewLine, string.Empty));
 });
 // Pop content from queue
 app.MapGet("api/pop", (QueueService queueService) => queueService.Pop());
