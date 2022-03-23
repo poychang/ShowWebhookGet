@@ -25,7 +25,7 @@ app.MapPost("api/webhook", (HttpContext context, QueueService queueService) =>
     var content = new
     {
         WebhookHeaders = JsonSerializer.Serialize(context.Request.Headers),
-        WebhookQuery = JsonSerializer.Serialize(context.Request.Query),
+        WebhookQuery = JsonSerializer.Serialize(context.Request.Query.Select(p => KeyValuePair.Create<string, string>(p.Key, p.Value))),
         WebhookBody = reader.ReadToEndAsync().GetAwaiter().GetResult()
     };
     queueService.Push(JsonSerializer.Serialize(content).Replace(System.Environment.NewLine, string.Empty));

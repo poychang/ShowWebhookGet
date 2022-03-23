@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Show Webhook Get</title>
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
-
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
@@ -15,8 +14,14 @@
         <div class="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3">
             <div class="w-1/2 pl-2 md:pl-0">
                 <a class="text-gray-900 text-base xl:text-xl no-underline hover:no-underline font-bold" href="#">
-                    <i class="fas fa-sun text-pink-600 pr-3"></i> Show Webhook Get
+                    Show Webhook Get
                 </a>
+            </div>
+
+            <div class="w-1/2 pr-0">
+                <div class="flex relative inline-block float-right">
+                    <span id="now" class="text-gray-900 text-base xl:text-xl" />
+                </div>
             </div>
         </div>
     </nav>
@@ -58,86 +63,28 @@
                     </div>
                 </div>
 
-                <div class="w-full p-3">
-                    <div class="bg-white border rounded shadow">
-                        <div class="border-b p-3">
-                            <h5 class="font-bold uppercase text-gray-600">History</h5>
-                        </div>
-                        <div class="p-5">
-                            <table class="w-full p-5 text-gray-700">
-                                <thead>
-                                    <tr>
-                                        <th class="text-left text-blue-900">Header</th>
-                                        <th class="text-left text-blue-900">Query String</th>
-                                        <th class="text-left text-blue-900">Body</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p class="py-2">
-                                <a class="text-blue-900" href="#">See More records...</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
-
-    <footer class="bg-white border-t border-gray-400 shadow ">
-        <div class="container max-w-md mx-auto flex py-8">
-            <div class="w-full mx-auto flex flex-wrap">
-                <!--<div class="flex w-full md:w-1/2 ">
-                    <div class="px-8">
-                        <h3 class="font-bold font-bold text-gray-900">About</h3>
-                        <p class="py-4 text-gray-600 text-sm"></p>
-                    </div>
-                </div>
-                <div class="flex w-full md:w-1/2">
-                    <div class="px-8">
-                        <h3 class="font-bold font-bold text-gray-900">Social</h3>
-                        <ul class="list-reset items-center text-sm pt-3">
-                            <li>
-                                <a class="inline-block text-gray-600 no-underline hover:text-gray-900 hover:underline py-1" href="#">Add social link</a>
-                            </li>
-                            <li>
-                                <a class="inline-block text-gray-600 no-underline hover:text-gray-900 hover:underline py-1" href="#">Add social link</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>-->
-            </div>
-        </div>
-    </footer>
 
     <script src="/js/signalr.min.js"></script>
     <script>
         "use strict";
 
-        var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
-        var streamingObserver = {
-            next: (item) => { output(`${item}`); },
-            complete: () => { output(`Stream completed`); },
-            error: (err) => { output(`${err}`); },
+        const history = [];
+        const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
+        const streamingObserver = {
+            next: (item) => {
+                var current = JSON.parse(item);
+                document.getElementById("output-current-header").innerHTML = `<p>${current.WebhookHeaders}</p>`;
+                document.getElementById("output-current-query").innerHTML = `<p>${current.WebhookQuery}</p>`;
+                document.getElementById("output-current-body").innerHTML = `<p>${current.WebhookBody}</p>`;
+
+                history.push(current);
+                console.table(history);
+            },
+            complete: () => { console.log(`Stream completed`); },
+            error: (err) => { console.log(`${err}`); },
         };
         connection.start()
             .then(() => {
@@ -145,15 +92,10 @@
                 connection.stream("Streaming").subscribe(streamingObserver);
             })
             .catch((err) => console.error);
-
-        var output = (message) => {
-            var content = JSON.parse(message);
-            document.getElementById("output-current-header").innerHTML += `<p>${content.WebhookHeaders}</p>`;
-            document.getElementById("output-current-query").innerHTML += `<p>${content.WebhookQuery}</p>`;
-            document.getElementById("output-current-body").innerHTML += `<p>${content.WebhookBody}</p>`;
-
-            console.log(message);
-        };
+        setInterval(() => {
+            var now = new Date(Date.now());
+            document.getElementById("now").innerHTML = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        }, 1000);
     </script>
 </body>
 </html>
