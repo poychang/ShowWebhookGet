@@ -10,6 +10,6 @@
 
 1. 開啟網站 [showwebhookget.azurewebsites.net](https://showwebhookget.azurewebsites.net)
 2. 讓第三方平台呼叫 `https://showwebhookget.azurewebsites.net/api/webhook` Webhook 端點，或用 Postman 來呼叫下列範例
-   - POST 
-   - Body { "message": "Hello World" }https://showwebhookget.azurewebsites.net/api/webhook
+   - POST https://showwebhookget.azurewebsites.net/api/webhook
+   - Body { "message": "Hello World" }
 3. 網站會顯示 `{ "message": "Hello World" }`
