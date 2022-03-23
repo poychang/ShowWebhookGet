@@ -13,8 +13,3 @@
    - POST 
    - Body { "message": "Hello World" }https://showwebhookget.azurewebsites.net/api/webhook
 3. 網站會顯示 `{ "message": "Hello World" }`
-
-## 技術
-
-- 後端使用 ASP.NET Core Minimal Web API 建置
-- 前端使用 [Server-sent Event](https://developer.mozilla.org/zh-TW/docs/Web/API/Server-sent_events/Using_server-sent_events) 來即時呈現 Webhook 拿到的資料

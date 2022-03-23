@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSignalR();
 builder.Services.AddSingleton<QueueService>();
 
 var app = builder.Build();
@@ -29,21 +30,7 @@ app.MapPost("api/webhook", (HttpContext context, QueueService queueService) =>
     };
     queueService.Push(JsonSerializer.Serialize(content).Replace(System.Environment.NewLine, string.Empty));
 });
-// Pop content from queue
-app.MapGet("api/pop", (QueueService queueService) => queueService.Pop());
-// server-sent event
-app.MapGet("api/server-send-events", async (HttpContext context, QueueService queueService) =>
-{
-    context.Response.Headers.Add("Content-Type", "text/event-stream");
-    while (true)
-    {
-        await Task.Delay(3000);
-        var content = queueService.Pop();
-
-        if (!string.IsNullOrEmpty(content)) await context.Response.WriteAsync($"data: {content}\n\n");
-
-        await context.Response.Body.FlushAsync();
-    }
-});
+// Message hub
+app.MapHub<MessageHub>("/messageHub");
 
 app.Run();

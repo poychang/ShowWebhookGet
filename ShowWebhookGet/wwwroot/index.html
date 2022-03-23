@@ -8,33 +8,28 @@
 </head>
 <body>
     <div id="output" />
+
+    <script src="/js/signalr.min.js"></script>
     <script>
-            // 建立一個 EventSource 與伺服器建立連線，該伺服器 Endpoint 必須要是能支援 event stream 模式的端點
-            // 也就是 HTTP Response Header 有設定 Content-Type 為 text/event-stream 的訊息
-            var source = new EventSource('api/server-send-events');
+        "use strict";
 
-            // onopen 事件：當連結開啟時
-            source.onopen = function (event) {
-                output('onopen');
-            };
+        var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
+        var streamingObserver = {
+            next: (item) => { output(`${item}`); },
+            complete: () => { output(`Stream completed`); },
+            error: (err) => { output(`${err}`); },
+        };
+        connection.start()
+            .then(() => {
+                console.log("SignalR is connected.");
+                connection.stream("Streaming").subscribe(streamingObserver);
+            })
+            .catch((err) => console.error);
 
-            // onmessage 事件：當接收到訊息時
-            source.onmessage = function (event) {
-                // 建議在接收訊息時，檢查來源是否符合預期，避免被惡意的網站利用，造成安全性問題
-                //if (e.origin != 'https://example.com') return;
-                output(`onmessage: ${event.data}`);
-            };
-
-            // onerror 事件：當錯誤發生時
-            // 伺服器關閉連線也會被視為一種錯誤發生
-            source.onerror = function (event) {
-                output(`onerror`);
-            };
-
-            var output = (message) => {
-                document.getElementById("output").innerHTML += `<p>${message}</p>`;
-                console.log(message);
-            };
+        var output = (message) => {
+            document.getElementById("output").innerHTML += `<p>${message}</p>`;
+            console.log(message);
+        };
     </script>
 </body>
 </html>
