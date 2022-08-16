@@ -32,6 +32,23 @@
 
                 <div class="w-full p-3">
                     <div class="bg-white border rounded shadow">
+                        <div class="p-5">
+                            <p>
+                                Using third-party platform to call the <span class="bg-gray-200">https://<span name="bind-host"></span>/api/webhook</span> Webhook endpoint, or use Postman to call the following examples:
+                            </p>
+                            <p class="bg-gray-200 m-3">
+                            POST https://<span name="bind-host"></span>/api/webhook<br/>
+                            BODY { "message": "Hello World" }
+                            </p>
+                            <p>
+                                This website will showing <span class="bg-gray-200">{ "message": "Hello World" }</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full p-3">
+                    <div class="bg-white border rounded shadow">
                         <div class="border-b p-3">
                             <h5 class="font-bold uppercase text-gray-600">Header</h5>
                         </div>
@@ -71,6 +88,7 @@
     <script>
         "use strict";
 
+        document.getElementsByName("bind-host").forEach(tag => tag.innerHTML = `${window.location.host}`);
         const history = [];
         const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
         const streamingObserver = {
