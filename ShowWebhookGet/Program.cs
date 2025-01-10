@@ -30,6 +30,16 @@ app.MapPost("api/webhook", (HttpContext context, QueueService queueService) =>
     };
     queueService.Push(JsonSerializer.Serialize(content).Replace(System.Environment.NewLine, string.Empty));
 });
+app.MapGet("api/webhook", (HttpContext context, QueueService queueService) =>
+{
+    var content = new
+    {
+        WebhookHeaders = JsonSerializer.Serialize(context.Request.Headers),
+        WebhookQuery = JsonSerializer.Serialize(context.Request.Query.Select(p => KeyValuePair.Create<string, string>(p.Key, p.Value))),
+        WebhookBody = "HTTP GET has no body in general."
+    };
+    queueService.Push(JsonSerializer.Serialize(content).Replace(System.Environment.NewLine, string.Empty));
+});
 // Message hub
 app.MapHub<MessageHub>("/messageHub");
 
